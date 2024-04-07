@@ -25,11 +25,12 @@ CREATE TABLE Patient (
     Email VARCHAR(255),
     ContactNumber VARCHAR(20),
     PreviousPurchase BIT NOT NULL,
+	BirthDate DATE,
     CONSTRAINT FK_Patient_Address FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
 );
 GO
 
--- CHECK constraint to ensure valid email format (simplified regex pattern)
+-- CHECK constraint to ensure valid email format (simplified regex pattern) 1
 ALTER TABLE Patient
 ADD CONSTRAINT CHK_Patient_Email CHECK (Email LIKE '%_@__%.__%');
 GO
@@ -56,7 +57,7 @@ CREATE TABLE Prescription (
 );
 GO
 
--- CHECK constraint to ensure the Dosage is not empty
+-- CHECK constraint to ensure the Dosage is not empty2
 ALTER TABLE Prescription
 ADD CONSTRAINT CHK_Prescription_Dosage CHECK (Dosage <> '');
 GO
@@ -71,7 +72,7 @@ CREATE TABLE MedicationItem (
 );
 GO
 
--- CHECK constraint to ensure the ExpiryDate is in the future
+-- CHECK constraint to ensure the ExpiryDate is in the future3
 ALTER TABLE MedicationItem
 ADD CONSTRAINT CHK_MedicationItem_ExpiryDate CHECK (ExpiryDate > GETDATE());
 GO
@@ -99,7 +100,7 @@ CREATE TABLE Inventory (
 );
 GO
 
--- CHECK constraint to ensure Quantity is not negative
+-- CHECK constraint to ensure Quantity is not negative4
 ALTER TABLE Inventory
 ADD CONSTRAINT CHK_Inventory_Quantity CHECK (Quantity >= 0);
 GO
@@ -151,7 +152,7 @@ CREATE TABLE Delivery (
 );
 GO
 
--- CHECK constraint to ensure the EstimatedDeliveryDate is after the OrderDate
+-- CHECK constraint to ensure the EstimatedDeliveryDate is after the OrderDate5
 ALTER TABLE Delivery
 ADD CONSTRAINT CHK_Delivery_Dates CHECK (EstimatedDeliveryDate >= DeliveryDate);
 GO
@@ -184,7 +185,7 @@ CREATE TABLE SupplyRecord (
 );
 GO
 
--- CHECK constraint to ensure QuantitySupplied is positive
+-- CHECK constraint to ensure QuantitySupplied is positive6
 ALTER TABLE SupplyRecord
 ADD CONSTRAINT CHK_SupplyRecord_QuantitySupplied CHECK (QuantitySupplied > 0);
 GO
@@ -200,7 +201,7 @@ CREATE TABLE Transactions (
 );
 GO
 
--- CHECK constraint to ensure Amount is positive
+-- CHECK constraint to ensure Amount is positive7
 ALTER TABLE Transactions
 ADD CONSTRAINT CHK_Transaction_Amount CHECK (Amount > 0);
 GO
@@ -208,6 +209,7 @@ GO
 -----------------------------------Views-----------------------------------------------------------------------
 
 -- View for Patient Addresses
+GO
 CREATE VIEW ViewPatientAddresses AS
 SELECT p.PatientID, p.FirstName, p.LastName, a.Street, a.City, a.State, a.ZipCode
 FROM Patient p
@@ -215,17 +217,20 @@ JOIN Address a ON p.AddressID = a.AddressID;
 
 
 -- View for Medication Details
+GO
 CREATE VIEW ViewMedicationDetails AS
 SELECT m.MedicationItemID, m.Name, m.Description, m.SideEffects, m.ExpiryDate
 FROM MedicationItem m;
 
 
 -- View for Supplier Information
+GO
 CREATE VIEW ViewSupplierInformation AS
 SELECT s.SupplierID, s.SupplierFirstName, s.SupplierLastName, s.SupplierEmail
 FROM Supplier s;
 
 -- View for Prescription Details
+GO
 CREATE VIEW ViewPrescriptionDetails AS
 SELECT pr.PrescriptionID, pa.FirstName + ' ' + pa.LastName AS PatientName, ph.Name AS PhysicianName, pr.DateIssued, pr.Dosage
 FROM Prescription pr
@@ -235,6 +240,7 @@ JOIN Physician ph ON pr.PhysicianID = ph.PhysicianID;
 ---------------------------------Stored Procedures-------------------------------------------------------------
 
 -- Stored Procedure to get patient information
+GO
 CREATE PROCEDURE GetPatientInfo
     @PatientID INT,
     @PatientInfo NVARCHAR(MAX) OUTPUT
@@ -252,6 +258,7 @@ SELECT @PatientInfoOutput AS PatientInfo;
 
 
 -- Stored Procedure to update reduced inventory
+GO
 CREATE PROCEDURE UpdateInventory
     @PharmacyID INT,
     @MedicationItemID INT,
@@ -266,6 +273,7 @@ END;
 EXEC UpdateInventory @PharmacyID = 2000, @MedicationItemID = 2000, @Quantity = 10;
 
 -- Stored Procedure to update reduced inventory
+GO
 CREATE PROCEDURE UpdateNewInventory
     @PharmacyID INT,
     @MedicationItemID INT,
@@ -281,6 +289,7 @@ EXEC UpdateInventory @PharmacyID = 2000, @MedicationItemID = 2000, @Quantity = 1
 
 
 -- Stored Procedure to get supplier contact details
+GO
 CREATE PROCEDURE GetSupplierContact
     @SupplierID INT,
     @ContactDetails NVARCHAR(MAX) OUTPUT
@@ -299,8 +308,9 @@ SELECT @SupplierContactOutput AS ContactDetail
 
 
 ---------------------------------------User Defined Functions -----------------------------------------------
---User Defined Function to calculate medicine Supply Value
-CREATE FUNCTION dbo.CalculatedSupplyValues (@QuantitySupplied INT)
+--1)User Defined Function to calculate medicine Supply Value
+GO
+CREATE FUNCTION CalculatedSupplyValues (@QuantitySupplied INT)
 RETURNS DECIMAL(10, 2)
 AS
 BEGIN
@@ -313,7 +323,7 @@ ALTER TABLE SupplyRecord
 ADD TotalValue AS dbo.CalculatedSupplyValues(QuantitySupplied);
 GO
 
---User Defined Function to get Order Duration 
+--2)User Defined Function to get Order Duration 
 
 CREATE FUNCTION GetOrderDuration (@OrderDate DATE, @DeliveryDate DATE)
 RETURNS INT
@@ -327,7 +337,7 @@ ALTER TABLE [Order]
 ADD OrderDuration AS dbo.GetOrderDuration(OrderDate, DeliveryDate);
 GO
 
----User Defined Function to get Full address of the Suplier
+---3)User Defined Function to get Full address of the Suplier
 
 CREATE FUNCTION GetSupplierFullAddress (
     @Street VARCHAR(255),
@@ -345,7 +355,7 @@ GO
 ALTER TABLE Supplier
 ADD FullAddress AS dbo.GetSupplierFullAddress(SupplierStreet, SupplierCity, SupplierState, SupplierZipCode);
 GO
---User Defined Function for calculating the age of the patient 
+--4)User Defined Function for calculating the age of the patient 
 
 CREATE FUNCTION CalculatePatientAge (@BirthDate DATE)
 RETURNS INT
@@ -363,27 +373,30 @@ ALTER TABLE Patient
 ADD Age AS dbo.CalculatePatientAge(BirthDate);
 GO
 
--- User Defined Function to calculate full name
+-- 5)User Defined Function to calculate full name
+GO
 CREATE FUNCTION GetFullNames (@FirstName VARCHAR(255), @LastName VARCHAR(255))
 RETURNS VARCHAR(510)
 AS
 BEGIN
     RETURN CONCAT(@FirstName, ' ', @LastName);
 END;
+GO -- This was missing, causing the "Incorrect syntax near the keyword 'ALTER'" error
 
 ALTER TABLE Patient
-ADD P_FullNames AS GetFullNames(FirstName, LastName);
+ADD P_FullNames AS dbo.GetFullNames(FirstName, LastName);
+GO
 
 ------------------------------------Triggers---------------------
 
 CREATE TABLE PrescriptionAudit (
-    AuditID INT PRIMARY KEY IDENTITY(1,1), -- Auto-incrementing primary key
+    AuditID INT PRIMARY KEY IDENTITY(1,1), 
     PrescriptionID INT,
     Changes VARCHAR(255),
     ChangeDate DATETIME
 );
 GO
-
+---trigger to track dosage changes         
 CREATE TRIGGER trgAfterUpdatePrescription
 ON Prescription
 AFTER UPDATE
@@ -404,7 +417,8 @@ WHERE PrescriptionID = 2000;
 
 select* from PrescriptionAudit
 
------trigger to alert when the inventoru is below 10 
+-----trigger to alert when the inventory is below 10 
+GO
 CREATE TRIGGER trgCheckInventory
 ON Inventory
 AFTER UPDATE
