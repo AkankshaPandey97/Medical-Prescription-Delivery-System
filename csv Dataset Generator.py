@@ -1,3 +1,7 @@
+#install faker to generate random data 
+pip install Faker
+
+#import required Libraries
 import csv
 from faker import Faker
 import os
