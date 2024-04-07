@@ -30,18 +30,7 @@ write_csv('Address.csv', ['AddressID', 'Street', 'City', 'State', 'ZipCode'], ad
 #patient_data = [[i, i, fake.first_name(), fake.last_name(), fake.email(), fake.phone_number(), fake.boolean()] for i in range(1, num_entries + 1)]
 #write_csv('Patient.csv', ['PatientID', 'AddressID', 'FirstName', 'LastName', 'Email', 'ContactNumber', 'PreviousPurchase'], patient_data)
 
-patient_data = [
-    [
-        i, 
-        i, 
-        fake.first_name(), 
-        fake.last_name(), 
-        fake.email(), 
-        fake.phone_number(), 
-        1 if fake.boolean() else 0,  # Ensure this is 1 or 0 for SQL BIT compatibility
-        fake.date_of_birth(minimum_age=18, maximum_age=90).strftime("%Y-%m-%d")  # Adding DOB, formatted as a string
-    ] for i in range(1, num_entries + 1)
-]
+patient_data = [[i, i, fake.first_name(), fake.last_name(), fake.email(), fake.phone_number(), fake.random_int(min=0, max=1), fake.date()] for i in range(1, num_entries + 1)]
 write_csv('Patient.csv', ['PatientID', 'AddressID', 'FirstName', 'LastName', 'Email', 'ContactNumber', 'PreviousPurchase', 'BirthDate'], patient_data)
 
 # Generate data for Physician table
