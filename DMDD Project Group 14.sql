@@ -300,7 +300,7 @@ SELECT @SupplierContactOutput AS ContactDetail
 
 ---------------------------------------User Defined Functions -----------------------------------------------
 --User Defined Function to calculate medicine Supply Value
-CREATE FUNCTION dbo.CalculatedSupplyValues2 (@QuantitySupplied INT)
+CREATE FUNCTION dbo.CalculatedSupplyValues (@QuantitySupplied INT)
 RETURNS DECIMAL(10, 2)
 AS
 BEGIN
@@ -310,7 +310,7 @@ END;
 GO
 
 ALTER TABLE SupplyRecord
-ADD TotalValue AS dbo.CalculatedSupplyValues2(QuantitySupplied);
+ADD TotalValue AS dbo.CalculatedSupplyValues(QuantitySupplied);
 GO
 
 --User Defined Function to get Order Duration 
