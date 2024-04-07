@@ -1,7 +1,7 @@
-CREATE DATABASE PharmacyDBDemo3;
+CREATE DATABASE PharmacyDBDemo;
 GO
 
-USE PharmacyDBDemo2;
+USE PharmacyDBDemo;
 GO
 
 -- Address Table
