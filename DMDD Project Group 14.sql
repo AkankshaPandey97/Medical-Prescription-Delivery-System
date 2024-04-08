@@ -118,21 +118,6 @@ CREATE TABLE [Order] (
     CONSTRAINT FK_Order_Prescription FOREIGN KEY (PrescriptionID) REFERENCES Prescription(PrescriptionID)
 );
 GO
-
--- OrderItem Table
-CREATE TABLE OrderItem (
-    OrderItemID INT PRIMARY KEY,
-    OrderID INT NOT NULL,
-    MedicationItemID INT NOT NULL,
-	DeliveryID INT
-    OrderQuantity INT NOT NULL,
-    Dosage VARCHAR(255),
-    CONSTRAINT FK_OrderItem_Order FOREIGN KEY (OrderID) REFERENCES [Order](OrderID),
-    CONSTRAINT FK_OrderItem_MedicationItem FOREIGN KEY (MedicationItemID) REFERENCES MedicationItem(MedicationItemID)
-	FOREIGN KEY (DeliveryID) REFERENCES Delivery(DeliveryID)
-);
-GO
-
 -- DeliveryPerson Table
 CREATE TABLE DeliveryPerson (
     DeliveryPersonID INT PRIMARY KEY,
@@ -142,7 +127,6 @@ CREATE TABLE DeliveryPerson (
     ContactNumber VARCHAR(20)
 );
 GO
-
 -- Delivery Table
 CREATE TABLE Delivery (
     DeliveryID INT PRIMARY KEY,
@@ -159,6 +143,21 @@ GO
 ALTER TABLE Delivery
 ADD CONSTRAINT CHK_Delivery_Dates CHECK (EstimatedDeliveryDate >= DeliveryDate);
 GO
+
+-- OrderItem Table
+CREATE TABLE OrderItem (
+    OrderItemID INT PRIMARY KEY,
+    OrderID INT NOT NULL,
+    MedicationItemID INT NOT NULL,
+	DeliveryID INT,
+    OrderQuantity INT NOT NULL,
+    Dosage VARCHAR(255),
+    CONSTRAINT FK_OrderItem_Order FOREIGN KEY (OrderID) REFERENCES [Order](OrderID),
+    CONSTRAINT FK_OrderItem_MedicationItem FOREIGN KEY (MedicationItemID) REFERENCES MedicationItem(MedicationItemID),
+	CONSTRAINT FK_OrderItem_Delivery FOREIGN KEY (DeliveryID) REFERENCES Delivery(DeliveryID)
+	);
+GO
+
 
 -- Supplier Table
 CREATE TABLE Supplier (
