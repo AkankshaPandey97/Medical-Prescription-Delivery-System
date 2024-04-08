@@ -1,7 +1,7 @@
-CREATE DATABASE PharmacyDBDemo;
+CREATE DATABASE PharmacyDBDemo5;
 GO
 
-USE PharmacyDBDemo;
+USE PharmacyDBDemo5;
 GO
 
 -- Address Table
@@ -44,16 +44,27 @@ CREATE TABLE Physician (
     VisitingHospital VARCHAR(255)
 );
 GO
+-- MedicationItem Table
+CREATE TABLE MedicationItem (
+    MedicationItemID INT PRIMARY KEY,
+    Name VARCHAR(255) NOT NULL,
+    Description TEXT,
+    SideEffects TEXT,
+    ExpiryDate DATE NOT NULL
+);
+GO
 
 -- Prescription Table
 CREATE TABLE Prescription (
     PrescriptionID INT PRIMARY KEY,
     PatientID INT NOT NULL,
     PhysicianID INT NOT NULL,
+	MedicationItemID Int Not Null,
     DateIssued DATE NOT NULL,
     Dosage VARCHAR(255) NOT NULL,
     CONSTRAINT FK_Prescription_Patient FOREIGN KEY (PatientID) REFERENCES Patient(PatientID),
-    CONSTRAINT FK_Prescription_Physician FOREIGN KEY (PhysicianID) REFERENCES Physician(PhysicianID)
+    CONSTRAINT FK_Prescription_Physician FOREIGN KEY (PhysicianID) REFERENCES Physician(PhysicianID),
+	CONSTRAINT FK_MedicationItemID_MedicationItem FOREIGN KEY (MedicationItemID) REFERENCES MedicationItem(MedicationItemID)
 );
 GO
 
@@ -83,7 +94,7 @@ CREATE TABLE Pharmacy (
     ShopName VARCHAR(255) NOT NULL,
     ShopStreet VARCHAR(255) NOT NULL,
     ShopCity VARCHAR(255) NOT NULL,
-    ShopState CHAR(2) NOT NULL,
+    ShopState VARCHAR(25) NOT NULL,
     ShopZipCode CHAR(10) NOT NULL,
     PhoneNumber VARCHAR(20)
 );
