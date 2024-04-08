@@ -37,8 +37,8 @@ prescription_data = [[i, fake.random_int(min=1, max=num_entries), fake.random_in
 write_csv('Prescription.csv', ['PrescriptionID', 'PatientID', 'PhysicianID', 'DateIssued', 'Dosage','MedicationItemID'], prescription_data)
 
 # Generate data for MedicationItem table
-medication_item_data = [[i, fake.catch_phrase(), fake.text(max_nb_chars=100), fake.text(max_nb_chars=50), fake.future_date()] for i in range(1, num_entries + 1)]
-write_csv('MedicationItem.csv', ['MedicationItemID', 'Name', 'Description', 'SideEffects', 'ExpiryDate'], medication_item_data)
+medication_item_data = [[i, fake.catch_phrase(), fake.text(max_nb_chars=100), fake.text(max_nb_chars=50)] for i in range(1, num_entries + 1)]
+write_csv('MedicationItem.csv', ['MedicationItemID', 'Name', 'Description', 'SideEffects'], medication_item_data)
 
 # Generate data for Pharmacy table
 pharmacy_data = [[i, fake.company(), fake.street_address(), fake.city(), fake.state_abbr(), fake.zipcode(), fake.phone_number()] for i in range(1, num_entries + 1)]
