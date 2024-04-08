@@ -52,8 +52,18 @@ write_csv('Inventory.csv', ['InventoryID', 'PharmacyID', 'MedicationItemID', 'Qu
 order_data = [[i, fake.random_int(min=1, max=num_entries), fake.random_int(min=1, max=num_entries), fake.date_this_decade(), fake.date_this_decade(), fake.random_number(digits=5)] for i in range(1, num_entries + 1)]
 write_csv('Order.csv', ['OrderID', 'PharmacyID', 'PrescriptionID', 'OrderDate', 'DeliveryDate', 'TotalPrice'], order_data)
 
-# Additional tables such as OrderItem, DeliveryPerson, Delivery, Supplier, SupplyRecord, and Transactions
-# should be generated following the same pattern, adjusting the fields and data types as necessary.
+order_item_data = [
+    [
+        i,  # OrderItemID
+        fake.random_int(min=1, max=num_entries),  # OrderID, assuming OrderID ranges from 1 to num_entries
+        fake.random_int(min=1, max=num_entries),  # MedicationItemID, assuming MedicationItemID ranges from 1 to num_entries
+        None if fake.boolean(chance_of_getting_true=50) else fake.random_int(min=1, max=num_entries),  # Optional DeliveryID, 50% chance of being None
+        fake.random_int(min=1, max=20),  # OrderQuantity, assuming a random quantity between 1 and 20
+        fake.sentence(nb_words=6)  # Dosage, a random sentence as a placeholder for dosage instructions
+    ] for i in range(1, num_entries + 1)
+]
+
+write_csv_with_optional_delivery_id('OrderItem.csv', ['OrderItemID', 'OrderID', 'MedicationItemID', 'DeliveryID', 'OrderQuantity', 'Dosage'], order_item_data)
 
 # Example for DeliveryPerson table
 delivery_person_data = [[i, fake.first_name(), fake.last_name(), fake.email(), fake.phone_number()] for i in range(1, num_entries + 1)]
