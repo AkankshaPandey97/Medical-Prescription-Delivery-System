@@ -1,7 +1,7 @@
-CREATE DATABASE PharmacyDBDemo5;
+CREATE DATABASE PharmacyDBDemo;
 GO
 
-USE PharmacyDBDemo5;
+USE PharmacyDBDemo;
 GO
 
 -- Address Table
@@ -50,9 +50,11 @@ CREATE TABLE MedicationItem (
     Name VARCHAR(255) NOT NULL,
     Description TEXT,
     SideEffects TEXT,
-    ExpiryDate DATE NOT NULL
+
 );
 GO
+
+
 
 -- Prescription Table
 CREATE TABLE Prescription (
@@ -73,20 +75,8 @@ ALTER TABLE Prescription
 ADD CONSTRAINT CHK_Prescription_Dosage CHECK (Dosage <> '');
 GO
 
--- MedicationItem Table
-CREATE TABLE MedicationItem (
-    MedicationItemID INT PRIMARY KEY,
-    Name VARCHAR(255) NOT NULL,
-    Description TEXT,
-    SideEffects TEXT,
-    ExpiryDate DATE NOT NULL
-);
-GO
 
--- CHECK constraint to ensure the ExpiryDate is in the future3
-ALTER TABLE MedicationItem
-ADD CONSTRAINT CHK_MedicationItem_ExpiryDate CHECK (ExpiryDate > GETDATE());
-GO
+
 
 -- Pharmacy Table
 CREATE TABLE Pharmacy (
@@ -134,10 +124,12 @@ CREATE TABLE OrderItem (
     OrderItemID INT PRIMARY KEY,
     OrderID INT NOT NULL,
     MedicationItemID INT NOT NULL,
+	DeliveryID INT
     OrderQuantity INT NOT NULL,
     Dosage VARCHAR(255),
     CONSTRAINT FK_OrderItem_Order FOREIGN KEY (OrderID) REFERENCES [Order](OrderID),
     CONSTRAINT FK_OrderItem_MedicationItem FOREIGN KEY (MedicationItemID) REFERENCES MedicationItem(MedicationItemID)
+	FOREIGN KEY (DeliveryID) REFERENCES Delivery(DeliveryID)
 );
 GO
 
@@ -230,7 +222,7 @@ JOIN Address a ON p.AddressID = a.AddressID;
 -- View for Medication Details
 GO
 CREATE VIEW ViewMedicationDetails AS
-SELECT m.MedicationItemID, m.Name, m.Description, m.SideEffects, m.ExpiryDate
+SELECT m.MedicationItemID, m.Name, m.Description, m.SideEffects
 FROM MedicationItem m;
 
 
