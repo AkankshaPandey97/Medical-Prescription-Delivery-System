@@ -61,9 +61,9 @@ CREATE TABLE Prescription (
     PrescriptionID INT PRIMARY KEY,
     PatientID INT NOT NULL,
     PhysicianID INT NOT NULL,
-	MedicationItemID Int Not Null,
     DateIssued DATE NOT NULL,
     Dosage VARCHAR(255) NOT NULL,
+	MedicationItemID Int Not Null,
     CONSTRAINT FK_Prescription_Patient FOREIGN KEY (PatientID) REFERENCES Patient(PatientID),
     CONSTRAINT FK_Prescription_Physician FOREIGN KEY (PhysicianID) REFERENCES Physician(PhysicianID),
 	CONSTRAINT FK_MedicationItemID_MedicationItem FOREIGN KEY (MedicationItemID) REFERENCES MedicationItem(MedicationItemID)
