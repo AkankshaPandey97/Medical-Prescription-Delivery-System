@@ -1,6 +1,5 @@
-#install faker to generate random data 
-pip install Faker
-
+#Esure you have instaled the "Faker" python library to generate random data . Command --pip install Faker
+#python code starts here
 import csv
 from faker import Faker
 import os
@@ -25,23 +24,32 @@ address_data = [[i, fake.street_address(), fake.city(), fake.state_abbr(), fake.
 write_csv('Address.csv', ['AddressID', 'Street', 'City', 'State', 'ZipCode'], address_data)
 
 # Generate data for Patient table
-patient_data = [[i, i, fake.first_name(), fake.last_name(), fake.email(), fake.phone_number(), fake.random_element(elements=[0, 1]), fake.date_of_birth(minimum_age=18, maximum_age=90).strftime("%Y-%m-%d")] for i in range(1, num_entries + 1)]
+patient_data = [[i, i, fake.first_name(), fake.last_name(), fake.email(), fake.numerify(text="##########"), fake.random_element(elements=[0, 1]), fake.date_of_birth(minimum_age=18, maximum_age=90).strftime("%Y-%m-%d")] for i in range(1, num_entries + 1)]
 write_csv('Patient.csv', ['PatientID', 'AddressID', 'FirstName', 'LastName', 'Email', 'ContactNumber', 'PreviousPurchase', 'BirthDate'], patient_data)
 
 # Generate data for Physician table
-physician_data = [[i, fake.name(), fake.job(), fake.phone_number(), fake.company()] for i in range(1, num_entries + 1)]
+physician_data = [[i, fake.name(), fake.job(), fake.numerify(text="##########"), fake.company()] for i in range(1, num_entries + 1)]
 write_csv('Physician.csv', ['PhysicianID', 'Name', 'Specialty', 'PhoneNumber', 'VisitingHospital'], physician_data)
 
 # Generate data for Prescription table
-prescription_data = [[i, fake.random_int(min=1, max=num_entries), fake.random_int(min=1, max=num_entries), fake.date(), fake.sentence(),fake.random_int(min=1, max=num_entries)] for i in range(1, num_entries + 1)]
-write_csv('Prescription.csv', ['PrescriptionID', 'PatientID', 'PhysicianID', 'DateIssued', 'Dosage','MedicationItemID'], prescription_data)
+prescription_data = [
+    [
+        i, 
+        fake.random_int(min=1, max=num_entries), 
+        fake.random_int(min=1, max=num_entries), 
+        fake.date_object().strftime("%Y-%m-%d"),  # Ensure date is in YYYY-MM-DD format
+        fake.sentence(), 
+        fake.random_int(min=1, max=num_entries)
+    ] for i in range(1, num_entries + 1)
+]
+write_csv('Prescription.csv', ['PrescriptionID', 'PatientID', 'PhysicianID', 'DateIssued', 'Dosage', 'MedicationItemID'], prescription_data)
 
 # Generate data for MedicationItem table
 medication_item_data = [[i, fake.catch_phrase(), fake.text(max_nb_chars=100), fake.text(max_nb_chars=50)] for i in range(1, num_entries + 1)]
 write_csv('MedicationItem.csv', ['MedicationItemID', 'Name', 'Description', 'SideEffects'], medication_item_data)
 
 # Generate data for Pharmacy table
-pharmacy_data = [[i, fake.company(), fake.street_address(), fake.city(), fake.state_abbr(), fake.zipcode(), fake.phone_number()] for i in range(1, num_entries + 1)]
+pharmacy_data = [[i, fake.company(), fake.street_address(), fake.city(), fake.state_abbr(), fake.zipcode(), fake.numerify(text="##########")] for i in range(1, num_entries + 1)]
 write_csv('Pharmacy.csv', ['PharmacyID', 'ShopName', 'ShopStreet', 'ShopCity', 'ShopState', 'ShopZipCode', 'PhoneNumber'], pharmacy_data)
 
 # Generate data for Inventory table
@@ -49,46 +57,75 @@ inventory_data = [[i, fake.random_int(min=1, max=num_entries), fake.random_int(m
 write_csv('Inventory.csv', ['InventoryID', 'PharmacyID', 'MedicationItemID', 'Quantity'], inventory_data)
 
 # Generate data for Order table
-order_data = [[i, fake.random_int(min=1, max=num_entries), fake.random_int(min=1, max=num_entries), fake.date_this_decade(), fake.date_this_decade(), fake.random_number(digits=5)] for i in range(1, num_entries + 1)]
+order_data = [[i, fake.random_int(min=1, max=num_entries), fake.random_int(min=1, max=num_entries), fake.date_this_decade().strftime("%Y-%m-%d"), fake.date_this_decade().strftime("%Y-%m-%d"), fake.random_number(digits=5)] for i in range(1, num_entries + 1)]
 write_csv('Order.csv', ['OrderID', 'PharmacyID', 'PrescriptionID', 'OrderDate', 'DeliveryDate', 'TotalPrice'], order_data)
 
 order_item_data = [
     [
         i,  # OrderItemID
-        fake.random_int(min=1, max=num_entries),  # OrderID, assuming OrderID ranges from 1 to num_entries
-        fake.random_int(min=1, max=num_entries),  # MedicationItemID, assuming MedicationItemID ranges from 1 to num_entries
-        None if fake.boolean(chance_of_getting_true=50) else fake.random_int(min=1, max=num_entries),  # Optional DeliveryID, 50% chance of being None
-        fake.random_int(min=1, max=20),  # OrderQuantity, assuming a random quantity between 1 and 20
+        fake.random_int(min=1, max=num_entries),  # OrderID
+        fake.random_int(min=1, max=num_entries),  # MedicationItemID
+        fake.random_int(min=1, max=num_entries),  # DeliveryID
+        fake.random_int(min=1, max=20), 
+                fake.random_int(min=1, max=20),  # OrderQuantity
         fake.sentence(nb_words=6)  # Dosage, a random sentence as a placeholder for dosage instructions
     ] for i in range(1, num_entries + 1)
 ]
 
-write_csv_with_optional_delivery_id('OrderItem.csv', ['OrderItemID', 'OrderID', 'MedicationItemID', 'DeliveryID', 'OrderQuantity', 'Dosage'], order_item_data)
+write_csv('OrderItem.csv', ['OrderItemID', 'OrderID', 'MedicationItemID', 'DeliveryID', 'OrderQuantity', 'Dosage'], order_item_data)
 
 # Example for DeliveryPerson table
-delivery_person_data = [[i, fake.first_name(), fake.last_name(), fake.email(), fake.phone_number()] for i in range(1, num_entries + 1)]
+delivery_person_data = [[i, fake.first_name(), fake.last_name(), fake.email(), fake.numerify(text="##########")] for i in range(1, num_entries + 1)]
 write_csv('DeliveryPerson.csv', ['DeliveryPersonID', 'FirstName', 'LastName', 'Email', 'ContactNumber'], delivery_person_data)
 
 # Generate data for Delivery table
-delivery_data = [[i, fake.random_int(min=1, max=num_entries), fake.random_int(min=1, max=num_entries), fake.date_this_decade(), fake.date_this_decade()] for i in range(1, num_entries + 1)]
+delivery_data = [
+    [
+        i, 
+        fake.random_int(min=1, max=num_entries), 
+        fake.random_int(min=1, max=num_entries), 
+        fake.date_this_decade().strftime("%Y-%m-%d"), 
+        fake.date_this_decade().strftime("%Y-%m-%d")
+    ] for i in range(1, num_entries + 1)
+]
 write_csv('Delivery.csv', ['DeliveryID', 'OrderID', 'DeliveryPersonID', 'DeliveryDate', 'EstimatedDeliveryDate'], delivery_data)
 
 # Generate data for Supplier table
-supplier_data = [[i, fake.first_name(), fake.last_name(), fake.phone_number(), fake.email(), fake.street_address(), fake.city(), fake.state_abbr(), fake.zipcode()] for i in range(1, num_entries + 1)]
+supplier_data = [
+    [
+        i, 
+        fake.first_name(), 
+        fake.last_name(), 
+        fake.numerify(text="##########"), 
+        fake.email(), 
+        fake.street_address(), 
+        fake.city(), 
+        fake.state_abbr(), 
+        fake.zipcode()
+    ] for i in range(1, num_entries + 1)
+]
 write_csv('Supplier.csv', ['SupplierID', 'SupplierFirstName', 'SupplierLastName', 'ContactNumber', 'SupplierEmail', 'SupplierStreet', 'SupplierCity', 'SupplierState', 'SupplierZipCode'], supplier_data)
 
 # Generate data for SupplyRecord table
-supply_record_data = [[i, fake.random_int(min=1, max=num_entries), fake.random_int(min=1, max=num_entries), fake.random_int(min=1, max=num_entries), fake.date_this_decade(), fake.random_int(min=1, max=100)] for i in range(1, num_entries + 1)]
+supply_record_data = [
+    [
+        i, 
+        fake.random_int(min=1, max=num_entries), 
+        fake.random_int(min=1, max=num_entries), 
+        fake.random_int(min=1, max=num_entries), 
+        fake.date_this_decade().strftime("%Y-%m-%d"), 
+        fake.random_int(min=1, max=100)
+    ] for i in range(1, num_entries + 1)
+]
 write_csv('SupplyRecord.csv', ['SupplyRecordID', 'SupplierID', 'PharmacyID', 'MedicationItemID', 'SupplyDate', 'QuantitySupplied'], supply_record_data)
 
 # Generate data for Transactions table
 transactions_data = [
     [
         i,
-        i,
-        #fake.random_int(min=1, max=num_entries),
+        i,  # Assuming TransactionID and OrderID are the same for simplicity
         fake.pydecimal(left_digits=5, right_digits=2, positive=True),  # Adjusted to use pydecimal
-        fake.date_this_decade(),
+        fake.date_this_decade().strftime("%Y-%m-%d"),
         fake.random_element(elements=['Credit Card', 'Debit Card', 'Cash'])
     ] for i in range(1, num_entries + 1)
 ]
