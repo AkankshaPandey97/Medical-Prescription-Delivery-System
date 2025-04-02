@@ -54,13 +54,7 @@ Medical-Prescription-Delivery-System/
 3. Use the GUI to interact with the system
 4. View data visualizations in the DMDD Visualisation directory
 
-## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
 
 ## License
 
